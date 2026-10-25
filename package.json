@@ -1,11 +1,21 @@
-// The one setting you need to change: your Sleeper league ID.
-// It's the long number at the end of your league's web address, e.g.
-// https://sleeper.com/leagues/1234567890123456789/team  ->  "1234567890123456789"
-// (You can also set SLEEPER_LEAGUE_ID in Vercel instead of editing this file.)
-export const LEAGUE_ID = process.env.SLEEPER_LEAGUE_ID || "PASTE_LEAGUE_ID_HERE";
-
-// How many players per team count toward the team total.
-export const TOP_N = 10;
-
-// How often fresh stats are pulled from Sleeper, in seconds (6 hours).
-export const REFRESH_SECONDS = 6 * 60 * 60;
+{
+  "name": "top10-league",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "15.5.28",
+    "react": "19.1.10",
+    "react-dom": "19.1.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}
