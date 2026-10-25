@@ -305,3 +305,9 @@ a:focus-visible, summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .lane-bar { animation: none; }
 }
+
+.roster abbr { text-decoration: none; }
+@media (max-width: 400px) {
+  .roster td, .roster th { padding-left: 5px; padding-right: 5px; }
+  .c-num { width: 3rem; }
+}

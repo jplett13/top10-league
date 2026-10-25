@@ -116,6 +116,9 @@ export default async function Page() {
                     </th>
                     <th scope="col">Player</th>
                     <th scope="col" className="c-num">GP</th>
+                    <th scope="col" className="c-num">
+                      <abbr title="Points per game">PPG</abbr>
+                    </th>
                     <th scope="col" className="c-num">Pts</th>
                   </tr>
                 </thead>
@@ -130,6 +133,7 @@ export default async function Page() {
                         </span>
                       </td>
                       <td className="c-num">{p.gamesPlayed ?? "–"}</td>
+                      <td className="c-num">{p.gamesPlayed ? fmt(p.points / p.gamesPlayed) : "–"}</td>
                       <td className="c-num c-pts">{fmt(p.points)}</td>
                     </tr>
                   ))}
