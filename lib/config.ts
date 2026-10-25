@@ -9,3 +9,10 @@ export const TOP_N = 10;
 
 // How often fresh stats are pulled from Sleeper, in seconds (6 hours).
 export const REFRESH_SECONDS = 6 * 60 * 60;
+
+// Team colors, matched to each owner's Sleeper name (not case-sensitive).
+export const TEAM_COLORS: Record<string, string> = {
+  dmills15000: "#C8102E", // red
+  jdplet: "#E8650C", // orange
+  mrduch23: "#141414", // black
+};

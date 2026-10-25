@@ -6,35 +6,10 @@
   --ink-soft: #4a4f57;
   --track: rgba(19, 34, 56, 0.1);
   --bench: 0.5;
-  --jersey-mix: 100%;
+  --jersey-mix: 70%;
+  color-scheme: light;
   --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
   --body: "Archivo", system-ui, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --maple: #3a2a1a;
-    --paint: rgba(255, 244, 225, 0.07);
-    --line: #e9dcc4;
-    --ink: #f3e9d6;
-    --ink-soft: #c2b49c;
-    --track: rgba(243, 233, 214, 0.12);
-    --bench: 0.45;
-    --jersey-mix: 35%;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-    --maple: #3a2a1a;
-    --paint: rgba(255, 244, 225, 0.07);
-    --line: #e9dcc4;
-    --ink: #f3e9d6;
-    --ink-soft: #c2b49c;
-    --track: rgba(243, 233, 214, 0.12);
-    --bench: 0.45;
-    --jersey-mix: 35%;
-    color-scheme: dark;
 }
 
 * { box-sizing: border-box; }

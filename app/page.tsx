@@ -1,5 +1,5 @@
 import { getStandings, type Team } from "@/lib/sleeper";
-import { TOP_N, REFRESH_SECONDS } from "@/lib/config";
+import { TOP_N, REFRESH_SECONDS, TEAM_COLORS } from "@/lib/config";
 
 // Render on each visit from the cached standings (refreshed every REFRESH_SECONDS).
 export const dynamic = "force-dynamic";
@@ -12,6 +12,8 @@ const fmt = (n: number) =>
   n.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 function colorFor(team: Team, all: Team[]) {
+  const picked = TEAM_COLORS[team.owner.toLowerCase()] || TEAM_COLORS[team.name.toLowerCase()];
+  if (picked) return picked;
   const order = [...all].sort((a, b) => a.rosterId - b.rosterId);
   return JERSEYS[order.findIndex((t) => t.rosterId === team.rosterId) % JERSEYS.length];
 }
