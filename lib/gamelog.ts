@@ -33,7 +33,7 @@ function getLeagueInfo() {
       }
       return { season: String(league?.season || new Date().getFullYear()), scoring };
     },
-    ["league-info-v2", LEAGUE_ID, refreshDay()],
+    ["league-info-v3", LEAGUE_ID, refreshDay()],
     { revalidate: CACHE_SECONDS },
   )();
 }
@@ -123,25 +123,44 @@ function normalize(data: any, scoring: Record<string, number>): { rows: GameRow[
   return { rows, grouped: multiGame ? "week" : "game" };
 }
 
-async function loadGameLog(id: string): Promise<GameLog> {
-  const { season, scoring } = await getLeagueInfo();
+// A player's games before `cutoff` (YYYY-MM-DD). Games on or after the cutoff
+// are tonight's and stay hidden until the 6 AM refresh, so a half-finished
+// game never shows up. `ok` is false only if Sleeper couldn't be reached.
+export async function fetchGameLog(
+  id: string,
+  season: string,
+  scoring: Record<string, number>,
+  cutoff: string,
+): Promise<GameLog & { ok: boolean }> {
   let weekly: GameLog | null = null;
+  let ok = false;
   for (const url of candidates(id, season)) {
     try {
       const { rows, grouped } = normalize(await getJSON(url), scoring);
+      ok = true;
       if (rows.length === 0) continue;
       const log = { games: rows, grouped, source: url.replace(/^https:\/\//, "") };
-      if (grouped === "game") return log;
+      if (grouped === "game") {
+        return { ...log, ok, games: rows.filter((g) => !g.date || g.date < cutoff) };
+      }
       weekly ??= log; // keep looking for single games, but remember this
     } catch {
       // try the next shape
     }
   }
-  return weekly ?? { games: [], grouped: "game", source: null };
+  return { ...(weekly ?? { games: [], grouped: "game" as const, source: null }), ok };
+}
+
+async function loadGameLog(id: string, cutoff: string): Promise<GameLog> {
+  const { season, scoring } = await getLeagueInfo();
+  const { ok, ...log } = await fetchGameLog(id, season, scoring, cutoff);
+  if (!ok) throw new Error("Sleeper didn't respond. Try again in a minute.");
+  return log;
 }
 
 export function getGameLog(id: string) {
-  return unstable_cache(() => loadGameLog(id), ["gamelog-v2", LEAGUE_ID, id, refreshDay()], {
+  const day = refreshDay();
+  return unstable_cache(() => loadGameLog(id, day), ["gamelog-v3", LEAGUE_ID, id, day], {
     revalidate: CACHE_SECONDS,
   })();
 }

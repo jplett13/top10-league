@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { LEAGUE_ID, TOP_N, CACHE_SECONDS, refreshDay } from "./config";
 import { mockStandings } from "./mock";
+import { fetchGameLog, type GameLog } from "./gamelog";
 
 export type PlayerRow = {
   id: string;
@@ -135,7 +136,7 @@ function gamesPlayed(line: StatLine | undefined): number | null {
   return null;
 }
 
-async function loadStandings(): Promise<Standings> {
+async function loadStandings(cutoff: string): Promise<Standings> {
   if (process.env.MOCK_DATA === "1") return mockStandings();
 
   if (!/^\d+$/.test(LEAGUE_ID)) {
@@ -178,6 +179,25 @@ async function loadStandings(): Promise<Standings> {
     }
   }
 
+  // Score every rostered player from his game log, leaving out tonight's games
+  // (date on or after the cutoff) until the 6 AM refresh. If a log can't be
+  // read, fall back to Sleeper's season totals for that player.
+  const season = String(league.season);
+  const logs = new Map<string, GameLog & { ok: boolean }>();
+  for (let i = 0; i < rosteredIds.length; i += 8) {
+    const batch = rosteredIds.slice(i, i + 8);
+    const results = await Promise.all(batch.map((id) => fetchGameLog(id, season, scoring, cutoff)));
+    batch.forEach((id, j) => logs.set(id, results[j]));
+  }
+  function pointsAndGames(id: string) {
+    const log = logs.get(id);
+    if (log?.ok && log.grouped === "game") {
+      const pts = log.games.reduce((sum, g) => sum + g.fpts, 0);
+      return { points: Math.round(pts * 10) / 10, gamesPlayed: log.games.length };
+    }
+    return { points: scoreLine(stats[id], scoring), gamesPlayed: gamesPlayed(stats[id]) };
+  }
+
   const userById = new Map(users.map((u) => [u.user_id, u]));
 
   const teams: Team[] = owned.map((r) => {
@@ -194,8 +214,7 @@ async function loadStandings(): Promise<Standings> {
           name: m?.name || `Player ${id}`,
           position: m?.position || "",
           nbaTeam: m?.team || "",
-          gamesPlayed: gamesPlayed(stats[id]),
-          points: scoreLine(stats[id], scoring),
+          ...pointsAndGames(id),
           counts: false,
         };
       })
@@ -225,7 +244,8 @@ async function loadStandings(): Promise<Standings> {
 // Cache the finished standings until the next 6 AM ET. Errors are never cached,
 // so a hiccup on Sleeper's side fixes itself on the next visit.
 export function getStandings() {
-  return unstable_cache(loadStandings, ["standings-v2", LEAGUE_ID, refreshDay()], {
+  const day = refreshDay();
+  return unstable_cache(() => loadStandings(day), ["standings-v3", LEAGUE_ID, day], {
     revalidate: CACHE_SECONDS,
   })();
 }
