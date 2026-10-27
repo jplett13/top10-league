@@ -1,5 +1,6 @@
 import { getStandings, type Team } from "@/lib/sleeper";
 import { TOP_N, REFRESH_SECONDS, TEAM_COLORS } from "@/lib/config";
+import GameLogDialog from "./GameLogDialog";
 
 // Render on each visit from the cached standings (refreshed every REFRESH_SECONDS).
 export const dynamic = "force-dynamic";
@@ -81,7 +82,7 @@ export default async function Page() {
           ))}
         </ol>
         <p className="legend">
-          Each team's top {TOP_N} players by fantasy points count. Players below the white line are on the bench.
+          Each team's top {TOP_N} players by fantasy points count. Players below the white line are on the bench. Tap a player to see his game log.
         </p>
       </header>
 
@@ -129,7 +130,16 @@ export default async function Page() {
                     <tr key={p.id} className={`${p.counts ? "in" : "out"}${i === TOP_N - 1 ? " last-in" : ""}`}>
                       <td className="c-rank">{i + 1}</td>
                       <td>
-                        <span className="p-name">{p.name}</span>
+                        <button
+                          type="button"
+                          className="p-name"
+                          data-player-id={p.id}
+                          data-player-name={p.name}
+                          data-player-meta={[p.position, p.nbaTeam, t.name].filter(Boolean).join(", ")}
+                          data-player-color={colorFor(t, teams)}
+                        >
+                          {p.name}
+                        </button>
                         <span className="p-meta">
                           {[p.position, p.nbaTeam].filter(Boolean).join(", ")}
                         </span>
@@ -171,6 +181,7 @@ export default async function Page() {
           </details>
         )}
       </footer>
+      <GameLogDialog />
     </main>
   );
 }

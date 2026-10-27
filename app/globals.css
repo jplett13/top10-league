@@ -286,3 +286,116 @@ a:focus-visible, summary:focus-visible {
   .roster td, .roster th { padding-left: 5px; padding-right: 5px; }
   .c-num { width: 3rem; }
 }
+
+/* ---------- clickable player names ---------- */
+
+button.p-name {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+button.p-name:hover { text-decoration-color: currentColor; }
+button.p-name:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- game log popup ---------- */
+
+.gamelog {
+  width: min(1100px, calc(100vw - 32px));
+  max-height: min(86vh, 900px);
+  padding: 0;
+  border: 0;
+  border-top: 10px solid var(--jersey, var(--ink));
+  background: #fbf6ec;
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgba(19, 34, 56, 0.35);
+}
+.gamelog::backdrop { background: rgba(19, 34, 56, 0.55); }
+.gamelog[open] { display: flex; flex-direction: column; }
+
+.gl-inner { display: flex; flex-direction: column; min-height: 0; padding: 16px 20px 20px; }
+
+.gl-head {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: start;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+.gl-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+.gl-meta { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.9rem; }
+.gl-summary {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.9rem;
+  line-height: 0.9;
+  text-align: right;
+  color: var(--jersey-text, var(--ink));
+}
+.gl-summary span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.gl-close {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.gl-close:hover { background: var(--ink); color: #fbf6ec; }
+.gl-close:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+.gl-status { margin: 4px 0 12px; color: var(--ink-soft); }
+
+.gl-scroll { overflow: auto; min-height: 0; border-top: 2px solid var(--ink); }
+
+.gl-table { border-collapse: collapse; width: 100%; font-size: 0.92rem; white-space: nowrap; }
+.gl-table th, .gl-table td { padding: 7px 9px; text-align: right; }
+.gl-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fbf6ec;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--track);
+}
+.gl-table abbr { text-decoration: none; }
+.gl-table tbody tr:nth-child(even) td,
+.gl-table tbody tr:nth-child(even) th { background: #f3ead9; }
+.gl-table tbody tr:nth-child(odd) th { background: #fbf6ec; }
+.gl-table .gl-sticky { position: sticky; left: 0; text-align: left; font-weight: 600; }
+.gl-table thead .gl-sticky { z-index: 2; }
+.gl-table td.gl-fpts { font-weight: 700; color: var(--jersey-text, var(--ink)); }
+
+@media (max-width: 640px) {
+  .gamelog { width: 100vw; max-width: 100vw; max-height: 92vh; margin: auto 0 0; }
+  .gl-inner { padding: 14px max(16px, env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+  .gl-head { grid-template-columns: 1fr auto; }
+  .gl-summary { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+}

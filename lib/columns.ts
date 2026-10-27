@@ -1,0 +1,20 @@
+// The box-score columns shown in the popup, in order.
+export const COLUMNS: { key: string; label: string; title: string }[] = [
+  { key: "min", label: "MIN", title: "Minutes" },
+  { key: "pts", label: "PTS", title: "Points" },
+  { key: "reb", label: "REB", title: "Rebounds" },
+  { key: "ast", label: "AST", title: "Assists" },
+  { key: "stl", label: "STL", title: "Steals" },
+  { key: "blk", label: "BLK", title: "Blocks" },
+  { key: "to", label: "TO", title: "Turnovers" },
+  { key: "pf", label: "PF", title: "Personal fouls" },
+  { key: "plus_minus", label: "+/-", title: "Plus/minus" },
+  { key: "fgm", label: "FGM", title: "Field goals made" },
+  { key: "fga", label: "FGA", title: "Field goals attempted" },
+  { key: "ftm", label: "FTM", title: "Free throws made" },
+  { key: "fta", label: "FTA", title: "Free throws attempted" },
+  { key: "tpm", label: "3PM", title: "3-pointers made" },
+  { key: "tpa", label: "3PA", title: "3-pointers attempted" },
+  { key: "oreb", label: "OREB", title: "Offensive rebounds" },
+  { key: "dreb", label: "DREB", title: "Defensive rebounds" },
+];
