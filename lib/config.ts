@@ -7,8 +7,19 @@ export const LEAGUE_ID = process.env.SLEEPER_LEAGUE_ID || "PASTE_LEAGUE_ID_HERE"
 // How many players per team count toward the team total.
 export const TOP_N = 10;
 
-// How often fresh stats are pulled from Sleeper, in seconds (6 hours).
-export const REFRESH_SECONDS = 6 * 60 * 60;
+// Stats refresh once a day at this hour, Eastern time (6 = 6 AM).
+export const REFRESH_HOUR_ET = 6;
+
+// Saved data is kept at most this long; the daily key below is what forces the refresh.
+export const CACHE_SECONDS = 2 * 24 * 60 * 60;
+
+// The date of the most recent refresh time, e.g. "2026-10-27". It changes at
+// 6 AM ET, so the first visit after 6 AM pulls fresh stats from Sleeper and
+// everyone sees that same copy until 6 AM the next day.
+export function refreshDay(now = new Date()): string {
+  const shifted = new Date(now.getTime() - REFRESH_HOUR_ET * 60 * 60 * 1000);
+  return shifted.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+}
 
 // Team colors, matched to each owner's Sleeper name (not case-sensitive).
 export const TEAM_COLORS: Record<string, string> = {

@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { LEAGUE_ID, TOP_N, REFRESH_SECONDS } from "./config";
+import { LEAGUE_ID, TOP_N, CACHE_SECONDS, refreshDay } from "./config";
 import { mockStandings } from "./mock";
 
 export type PlayerRow = {
@@ -222,11 +222,13 @@ async function loadStandings(): Promise<Standings> {
   };
 }
 
-// Cache the finished standings for REFRESH_SECONDS. Errors are never cached,
+// Cache the finished standings until the next 6 AM ET. Errors are never cached,
 // so a hiccup on Sleeper's side fixes itself on the next visit.
-export const getStandings = unstable_cache(loadStandings, ["standings-v1", LEAGUE_ID], {
-  revalidate: REFRESH_SECONDS,
-});
+export function getStandings() {
+  return unstable_cache(loadStandings, ["standings-v2", LEAGUE_ID, refreshDay()], {
+    revalidate: CACHE_SECONDS,
+  })();
+}
 
 // Uncached raw look at what Sleeper returns, for /api/debug.
 export async function debugSnapshot() {

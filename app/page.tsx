@@ -1,8 +1,8 @@
 import { getStandings, type Team } from "@/lib/sleeper";
-import { TOP_N, REFRESH_SECONDS, TEAM_COLORS } from "@/lib/config";
+import { TOP_N, REFRESH_HOUR_ET, TEAM_COLORS } from "@/lib/config";
 import GameLogDialog from "./GameLogDialog";
 
-// Render on each visit from the cached standings (refreshed every REFRESH_SECONDS).
+// Render on each visit from the cached standings (refreshed daily at REFRESH_HOUR_ET).
 export const dynamic = "force-dynamic";
 
 // Jersey colors, assigned by Sleeper roster slot so a team keeps its color
@@ -164,8 +164,8 @@ export default async function Page() {
 
       <footer className="foot">
         <p>
-          Updated {updatedLabel(data.fetchedAt)} ET. Stats come from Sleeper and refresh every{" "}
-          {Math.round(REFRESH_SECONDS / 3600)} hours.
+          Updated {updatedLabel(data.fetchedAt)} ET. Stats come from Sleeper and refresh once a day at{" "}
+          {REFRESH_HOUR_ET % 12 || 12} {REFRESH_HOUR_ET < 12 ? "AM" : "PM"} ET.
         </p>
         {data.scoring.length > 0 && (
           <details>

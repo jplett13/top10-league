@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { LEAGUE_ID, REFRESH_SECONDS } from "./config";
+import { LEAGUE_ID, CACHE_SECONDS, refreshDay } from "./config";
 
 export type GameRow = {
   date: string | null; // YYYY-MM-DD
@@ -23,18 +23,20 @@ async function getJSON(url: string): Promise<any> {
 }
 
 // League scoring + season, cached so each popup doesn't re-ask Sleeper.
-const getLeagueInfo = unstable_cache(
-  async () => {
-    const league = await getJSON(`https://api.sleeper.app/v1/league/${LEAGUE_ID}`);
-    const scoring: Record<string, number> = {};
-    for (const [k, v] of Object.entries(league?.scoring_settings || {})) {
-      if (typeof v === "number" && v !== 0) scoring[k] = v;
-    }
-    return { season: String(league?.season || new Date().getFullYear()), scoring };
-  },
-  ["league-info-v1", LEAGUE_ID],
-  { revalidate: REFRESH_SECONDS },
-);
+function getLeagueInfo() {
+  return unstable_cache(
+    async () => {
+      const league = await getJSON(`https://api.sleeper.app/v1/league/${LEAGUE_ID}`);
+      const scoring: Record<string, number> = {};
+      for (const [k, v] of Object.entries(league?.scoring_settings || {})) {
+        if (typeof v === "number" && v !== 0) scoring[k] = v;
+      }
+      return { season: String(league?.season || new Date().getFullYear()), scoring };
+    },
+    ["league-info-v2", LEAGUE_ID, refreshDay()],
+    { revalidate: CACHE_SECONDS },
+  )();
+}
 
 function candidates(id: string, season: string) {
   const base = `https://api.sleeper.com/stats/nba/player/${id}?season_type=regular&season=${season}`;
@@ -139,8 +141,8 @@ async function loadGameLog(id: string): Promise<GameLog> {
 }
 
 export function getGameLog(id: string) {
-  return unstable_cache(() => loadGameLog(id), ["gamelog-v1", LEAGUE_ID, id], {
-    revalidate: REFRESH_SECONDS,
+  return unstable_cache(() => loadGameLog(id), ["gamelog-v2", LEAGUE_ID, id, refreshDay()], {
+    revalidate: CACHE_SECONDS,
   })();
 }
 
